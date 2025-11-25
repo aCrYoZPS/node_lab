@@ -14,6 +14,14 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const db = require("./app/models");
+db.mongoose
+    .connect(db.url)
+    .catch(err => {
+        console.log(`DB connection failed with exception ${err}.\nAborting.`);
+        process.exit(1);
+    });
+
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to hell." });
 });
