@@ -1,0 +1,32 @@
+{
+  "name": "node_lab",
+  "version": "1.0.0",
+  "description": "STRWEB lab help me I hate js",
+  "keywords": [
+    "hate",
+    "hate",
+    "hate",
+    "hate"
+  ],
+  "homepage": "https://github.com/aCrYoZPS/node_lab#readme",
+  "bugs": {
+    "url": "https://github.com/aCrYoZPS/node_lab/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aCrYoZPS/node_lab.git"
+  },
+  "license": "ISC",
+  "author": "aCrYoZ",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mongoose": "^9.0.0"
+  }
+}
