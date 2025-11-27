@@ -19,7 +19,8 @@ async function register(req: Request, res: Response) {
     }
 
     const password_hash = await bcrypt.hash(password, HASHING_SALT_ROUNDS);
-    let new_user = new User(email, password_hash, name);
+
+    let new_user = new User({ email, password_hash, name });
     new_user = await new_user.save();
 
     const token = jwt.sign({ user_id: new_user._id }, process.env.JWT_SECRET!);
@@ -27,6 +28,28 @@ async function register(req: Request, res: Response) {
     return res.json({ user: new_user, token: token });
 }
 
-async function authenticate(req: Request, res: Response) {
+async function login(req: Request, res: Response) {
     const { email, password } = req.body;
+
+    if (email === undefined || password === undefined) {
+        return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const user = await User.findByEmail(email);
+    if (user === null) {
+        return res.status(404).json({ message: "User with that email not found" });
+    }
+
+    const rightPassword = await bcrypt.compare(password, user.password_hash);
+    if (!rightPassword) {
+        return res.status(403).json({ message: "Invalid password" });
+    }
+
+    const token = jwt.sign({ user_id: user._id }, process.env.JWT_SECRET!);
+
+    return res.json({ token: token });
 }
+
+
+authRouter.post("/register", register);
+authRouter.post("/login", login);

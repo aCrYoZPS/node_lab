@@ -6,6 +6,7 @@ import cors from "cors";
 import { userRouter } from "./app/routers/user_router.js";
 import { db } from "./app/models/index.js";
 import { errorHandlingMiddleware, loggingMiddleware, authMiddleware } from "./app/middlewares/index.js";
+import { authRouter } from "./app/routers/auth_router.js";
 
 db.mongoose
     .connect(db.url)
@@ -22,6 +23,8 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/auth", authRouter);
 
 app.use(authMiddleware)
 app.use("/users", userRouter);

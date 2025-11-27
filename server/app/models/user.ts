@@ -1,13 +1,29 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+export interface IUser extends Document {
+    name: string;
+    email: string;
+    password_hash: string;
+    createdAt: NativeDate;
+    updatedAt: NativeDate;
+}
+
+export interface IUserModel extends Model<IUser> {
+    findByEmail(email: string): Promise<IUser | null>;
+}
+
+const userSchema = new Schema<IUser, IUserModel>(
     {
-        name: String,
-        email: { type: String, required: true, unique: true },
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true, index: true },
         password_hash: { type: String, required: true },
     },
     { timestamps: true }
 );
+
+userSchema.statics.findByEmail = async function(email: string) {
+    return await this.findOne({ email })
+};
 
 userSchema.method("toJSON", function() {
     return {
@@ -19,4 +35,4 @@ userSchema.method("toJSON", function() {
     }
 });
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model<IUser, IUserModel>("User", userSchema);
