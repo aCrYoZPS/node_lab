@@ -4,6 +4,7 @@ export interface IUser extends Document {
     name: string;
     email: string;
     password_hash: string;
+    is_admin: boolean;
     createdAt: NativeDate;
     updatedAt: NativeDate;
 }
@@ -17,6 +18,7 @@ const userSchema = new Schema<IUser, IUserModel>(
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true, index: true },
         password_hash: { type: String, required: true },
+        is_admin: { type: Boolean, required: true, default: false },
     },
     { timestamps: true }
 );
@@ -27,11 +29,12 @@ userSchema.statics.findByEmail = async function(email: string) {
 
 userSchema.method("toJSON", function() {
     return {
+        id: this._id,
         name: this.name,
         email: this.email,
-        createdAt: this.createdAt,
-        updatedAt: this.updatedAt,
-        id: this._id,
+        is_admin: this.is_admin,
+        created_at: this.createdAt,
+        updated_at: this.updatedAt,
     }
 });
 

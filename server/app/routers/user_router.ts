@@ -13,7 +13,7 @@ const User = db.User;
 async function getUser(req: Request, res: Response) {
     const user = await User.findById(req.claims?.user_id);
     if (user === null) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: `User with id ${req.claims?.user_id} not found` });
     }
 
     return res.json(user);
@@ -22,7 +22,7 @@ async function getUser(req: Request, res: Response) {
 async function getUserById(req: Request, res: Response) {
     const user = await User.findById(req.params.id);
     if (user === null) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: `User with id ${req.params.id} not found` });
     }
 
     return res.json(user);
@@ -40,7 +40,7 @@ async function updateUser(req: Request, res: Response) {
 
     const user = await User.findById(req.params.id);
     if (user === null) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: `User with id ${req.params.id} not found` });
     }
 
     if (name !== undefined) {
@@ -72,7 +72,7 @@ async function deleteUser(req: Request, res: Response) {
 
     const user = await User.findByIdAndDelete(req.params.id);
     if (user === null) {
-        res.status(404).json({ message: 'User not found' });
+        res.status(404).json({ message: `User with id ${req.params.id} not found` });
         return;
     }
 
