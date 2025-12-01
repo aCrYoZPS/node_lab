@@ -4,6 +4,7 @@ import { Service } from "./service.js";
 import { ServiceType } from "./service_type.js";
 import { User } from "./user.js"
 import mongoose from "mongoose";
+import { Vacancy } from "./vacancy.js";
 
 mongoose.Promise = global.Promise;
 
@@ -13,5 +14,6 @@ export const db = {
     User,
     ServiceType,
     Service,
-    Article
+    Article,
+    Vacancy
 };

@@ -23,87 +23,94 @@ async function getArticleById(req: Request, res: Response) {
     return res.json(article);
 }
 
+
 async function getArticlesByAuthor(req: Request, res: Response) {
     const user = await User.findById(req.params.author_id);
+    if (user === null) {
+        return res.status(404).json({ message: `Author with id ${req.params.author_id} not found` });
+    }
 
     const articles = await Article.findByAuthorId(req.params.author_id!);
 
     if (articles === null) {
-
+        return res.status(200).json([]);
     }
+
+    return res.status(200).json(articles);
 }
 
-async function createService(req: Request, res: Response) {
-    const { name, price, service_type_id } = req.body;
+async function createArticle(req: Request, res: Response) {
+    const { title, abstract, content } = req.body;
 
     const user = await User.findById(req.claims?.user_id);
-    if (user === null || !user.is_admin) {
+    if (user === null) {
+        return res.status(403).json({ message: "Unauthorized" })
+    }
+
+    let new_article = new Article({ title, abstract, content, author: req.claims?.user_id });
+    new_article = await new_article.save();
+
+    return res.status(201).json(new_article);
+}
+
+async function updateArticle(req: Request, res: Response) {
+    const { title, abstract, content } = req.body;
+
+    const user = await User.findById(req.claims?.user_id);
+    if (user === null) {
+        return res.status(403).json({ message: "Unauthorized" })
+    }
+
+    let article = await Article.findById(req.params.id);
+    if (article === null) {
+        return res.status(404).json({ message: `Article with id ${req.params.id} not found` });
+    }
+
+    if (user._id !== article.author && !user.is_admin) {
         return res.status(403).json({ message: "Insufficient privilege level" })
     }
 
-    const service_type = await ServiceType.findById(service_type_id);
-    if (service_type === null) {
-        return res.status(400).json({ message: `Invalid service type id ${service_type_id}` });
+    if (title !== undefined) {
+        article.title = title;
     }
 
-    let new_service = new Service({ name, price, service_type: service_type._id });
-    new_service = await new_service.save();
+    if (abstract !== undefined) {
+        article.abstract = abstract;
+    }
 
-    return res.status(201).json(new_service);
+    if (content !== undefined) {
+        article.content = content;
+    }
+
+    article = await article.save();
+
+    return res.json(article);
 }
 
-async function updateService(req: Request, res: Response) {
-    const { name, price, service_type_id } = req.body;
-
+async function deleteArticle(req: Request, res: Response) {
     const user = await User.findById(req.claims?.user_id);
-    if (user === null || !user.is_admin) {
+    if (user === null) {
+        return res.status(403).json({ message: "Unauthorized" })
+    }
+
+
+    const article = await Article.findById(req.params.id);
+    if (article === null) {
+        return res.status(404).json({ message: `Article with id ${req.params.id} not found` });
+    }
+
+    if (user._id !== article.author && !user.is_admin) {
         return res.status(403).json({ message: "Insufficient privilege level" })
     }
 
-    const service = await Service.findById(req.params.id);
-    if (service === null) {
-        return res.status(404).json({ message: `Service with id ${req.params.id} not found` });
-    }
+    await Article.findByIdAndDelete(req.params.id);
 
-    if (name !== undefined) {
-        service.name = name;
-    }
-
-    if (price !== undefined) {
-        service.price = price;
-    }
-
-    if (service_type_id !== undefined) {
-        const service_type = await ServiceType.findById(service_type_id);
-        if (service_type === null) {
-            return res.status(400).json({ message: `Invalid service type id ${service_type_id}` });
-        }
-
-        service.service_type = service_type._id;
-    }
-
-    await service.save();
-
-    return res.json(service);
+    res.json({ message: 'Article deleted' });
 }
 
-async function deleteService(req: Request, res: Response) {
-    const user = await User.findById(req.claims?.user_id);
-    if (user === null || !user.is_admin) {
-        return res.status(403).json({ message: "Insufficient privilege level" })
-    }
-
-    const service = await Service.findByIdAndDelete(req.params.id);
-    if (service === null) {
-        res.status(404).json({ message: 'Service not found' });
-        return;
-    }
-
-    res.json({ message: 'Service deleted' });
-}
-
-serviceRouter.get("/", getAllServices);
-serviceRouter.get('/:id', getServiceById);
-serviceRouter.post('/', authMiddleware, createService);
-serviceRouter.put('/:id', authMiddleware, updateService);
-serviceRouter.delete('/:id', authMiddleware, deleteService);
+articleRouter.get("/", getAllArticles);
+articleRouter.get('/:id', getArticleById);
+articleRouter.get('author/:author_id', getArticlesByAuthor);
+articleRouter.post("/", authMiddleware, createArticle);
+articleRouter.put('/:id', authMiddleware, updateArticle);
+articleRouter.delete('/:id', authMiddleware, deleteArticle);

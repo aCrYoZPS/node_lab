@@ -9,6 +9,8 @@ import { errorHandlingMiddleware, loggingMiddleware, authMiddleware } from "./ap
 import { authRouter } from "./app/routers/auth_router.js";
 import { serviceTypeRouter } from "./app/routers/service_type_router.js";
 import { serviceRouter } from "./app/routers/service_router.js";
+import { articleRouter } from "./app/routers/article_router.js";
+import { vacancyRouter } from "./app/routers/vacancy_router.js";
 
 db.mongoose
     .connect(db.url)
@@ -27,10 +29,11 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/auth", authRouter);
-app.use("/service_types", serviceTypeRouter);
-app.use("/services", serviceRouter);
 app.use("/articles", articleRouter);
+app.use("/auth", authRouter);
+app.use("/services", serviceRouter);
+app.use("/service_types", serviceTypeRouter);
+app.use("/vacancies", vacancyRouter)
 
 app.use(authMiddleware)
 app.use("/users", userRouter);
