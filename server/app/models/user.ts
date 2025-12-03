@@ -7,6 +7,7 @@ export interface IUser extends Document {
     is_admin: boolean;
     createdAt: NativeDate;
     updatedAt: NativeDate;
+    google_id?: string;
 }
 
 export interface IUserModel extends Model<IUser> {
@@ -17,8 +18,9 @@ const userSchema = new Schema<IUser, IUserModel>(
     {
         name: { type: String, required: true },
         email: { type: String, required: true, unique: true, index: true },
-        password_hash: { type: String, required: true },
+        password_hash: { type: String },
         is_admin: { type: Boolean, required: true, default: false },
+        google_id: { type: String, required: false, default: null, unique: true, sparse: true }
     },
     { timestamps: true }
 );
@@ -35,6 +37,7 @@ userSchema.method("toJSON", function() {
         is_admin: this.is_admin,
         created_at: this.createdAt,
         updated_at: this.updatedAt,
+        google_id: this.google_id
     }
 });
 

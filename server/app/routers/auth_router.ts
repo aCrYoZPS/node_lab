@@ -1,3 +1,4 @@
+import passport from "passport";
 import express from "express";
 import type { Request, Response } from "express";
 import { db } from "../models/index.js"
@@ -53,3 +54,16 @@ async function login(req: Request, res: Response) {
 
 authRouter.post("/register", register);
 authRouter.post("/login", login);
+authRouter.get("/google", passport.authenticate("google", {
+    scope: ["email", "profile"],
+    session: false
+}));
+
+authRouter.get("/google/callback",
+    passport.authenticate("google", { session: false }),
+    async (req: Request, res: Response) => {
+        const user = req.user as any;
+        const token = jwt.sign({ user_id: user._id }, process.env.JWT_SECRET!);
+        res.json({ token });
+    }
+);

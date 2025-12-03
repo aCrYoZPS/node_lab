@@ -11,4 +11,5 @@ server/target
 .env
 
 npm-debug.log # old npm log file
-yarn-error.log # yarn log file
+
+*.local
