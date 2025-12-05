@@ -8,7 +8,6 @@ import { serviceTypeRouter } from "./app/routers/service_type_router.js";
 import { serviceRouter } from "./app/routers/service_router.js";
 import { articleRouter } from "./app/routers/article_router.js";
 import { vacancyRouter } from "./app/routers/vacancy_router.js";
-import { aiRouter } from "./app/routers/ai_router.js";
 import passport from "passport";
 
 import { db } from "./app/models/index.js";
@@ -37,7 +36,6 @@ app.use("/articles", articleRouter);
 app.use("/services", serviceRouter);
 app.use("/service_types", serviceTypeRouter);
 app.use("/vacancies", vacancyRouter)
-app.use("/ai", aiRouter);
 
 app.use(authMiddleware)
 app.use("/users", userRouter);
