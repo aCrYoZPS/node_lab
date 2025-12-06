@@ -1,10 +1,62 @@
-import type { Service, Vacancy } from './types';
+import type { Service, ServiceType, Vacancy } from './types';
+
+export const serviceTypes: ServiceType[] = [
+    {
+        id: "A",
+        name: "Residential",
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+
+    {
+        id: "B",
+        name: "Commercial",
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+]
 
 export const services: Service[] = [
-    { id: 1, title: 'Уборка квартир', description: 'Полная уборка', price: 5000, image: 'https://via.placeholder.com/150' },
-    { id: 2, title: 'Химчистка', description: 'Чистка мебели', price: 3000, image: 'https://via.placeholder.com/150' },
-    { id: 3, title: 'Мойка окон', description: 'Без разводов', price: 1500, image: 'https://via.placeholder.com/150' },
-    { id: 4, title: 'Офис', description: 'Клининг офисов', price: 10000, image: 'https://via.placeholder.com/150' },
+    {
+        id: "a",
+        name: 'Уборка квартир',
+        price: 5000,
+        serviceType: serviceTypes[0],
+        description: 'Полная уборка',
+        image: 'https://via.placeholder.com/150',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: "b",
+        name: 'Химчистка',
+        description: 'Чистка мебели',
+        price: 3000,
+        serviceType: serviceTypes[0],
+        image: 'https://via.placeholder.com/150',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: "c",
+        name: 'Мойка окон',
+        description: 'Без разводов',
+        price: 1500,
+        serviceType: serviceTypes[0],
+        image: 'https://via.placeholder.com/150',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: "d",
+        name: 'Офис',
+        description: 'Клининг офисов',
+        price: 10000,
+        image: 'https://via.placeholder.com/150',
+        serviceType: serviceTypes[1],
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
 ];
 
 export const vacancies: Vacancy[] = [

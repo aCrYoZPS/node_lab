@@ -72,3 +72,21 @@ body {
 .btn:active {
     transform: scale(0.95);
 }
+
+.price-slider-label {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Fixed padding/space between label text and slider */
+  width: 350px;
+}
+
+.slider-container {
+  flex: 1; /* Takes remaining space, slider stays right-aligned */
+  display: flex;
+  justify-content: flex-end;
+}
+
+.price-slider {
+  width: 100%; /* Full width of container */
+  max-width: 200px; /* Optional: constrain slider width */
+}

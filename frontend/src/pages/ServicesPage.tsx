@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ServiceCard from '../components/ServiceCard';
-import { services as initialServices } from '../mockData';
-import type { Service } from '../types';
+import { API_BASE_URL } from '../globals.ts'
+import type { Service } from '../types.ts';
+import { useApiData } from '../hooks/UseApi.tsx';
 
 // Требование: Функциональный компонент с декларативной функцией (function)
 function ServicesPage() {
     const navigate = useNavigate();
 
     // Требование: Использование хуков useState
-    const [services, setServices] = useState<Service[]>([]);
     const [filterPrice, setFilterPrice] = useState<number>(10000);
     const [searchTerm, setSearchTerm] = useState<string>('');
-
-    // Требование: Использование хука useEffect (имитация загрузки)
-    useEffect(() => {
-        // Имитация задержки API
-        setTimeout(() => {
-            setServices(initialServices);
-        }, 500);
-    }, []);
+    const { data: services, loading, error } = useApiData(`${API_BASE_URL}/services`) as {
+        data: Service[];
+        loading: boolean;
+        error: string | null;
+    };
 
     // Handler 1: Фильтрация по слайдеру
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,35 +29,55 @@ function ServicesPage() {
     };
 
     // Handler 3: Переход к деталям (передается в дочерний компонент)
-    const handleViewDetails = (id: number) => {
+    const handleViewDetails = (id: string) => {
         navigate(`/services/${id}`);
     };
 
     // Фильтрация данных
     const filteredServices = services.filter(
-        s => s.price <= filterPrice && s.title.toLowerCase().includes(searchTerm.toLowerCase())
+        s => s.price <= filterPrice && s.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <div className="container">
             <h2>Каталог услуг</h2>
 
-            <div className="filters" style={{ padding: '20px', background: 'white', marginBottom: '20px' }}>
+            <div
+                className="filters"
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '15px',
+                    padding: '20px',
+                    background: 'white',
+                    marginBottom: '20px'
+                }}
+            >
                 <input
                     type="text"
                     placeholder="Поиск услуги..."
                     onChange={handleSearch}
                     style={{ padding: '8px', marginRight: '10px' }}
                 />
-                <label>
+                <label className="price-slider-label">
                     Макс. цена: {filterPrice}
-                    <input
-                        type="range"
-                        min="1000"
-                        max="15000"
-                        value={filterPrice}
-                        onChange={handlePriceChange}
-                    />
+                    <div className="slider-container">
+                        <input
+                            type="range"
+                            min="1000"
+                            max="15000"
+                            value={filterPrice}
+                            onChange={handlePriceChange}
+                            className="price-slider"
+                        />
+                    </div>
                 </label>
             </div>
 

@@ -1,9 +1,19 @@
 export interface Service {
-    id: number;
-    title: string;
-    description: string;
+    id: string;
+    name: string;
     price: number;
+    serviceType: ServiceType;
+    description: string;
+    createdAt: Date;
+    updatedAt: Date;
     image: string;
+}
+
+export interface ServiceType {
+    id: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface Vacancy {
