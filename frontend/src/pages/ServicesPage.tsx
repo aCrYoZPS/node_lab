@@ -10,13 +10,19 @@ function ServicesPage() {
     const navigate = useNavigate();
 
     // Требование: Использование хуков useState
-    const [filterPrice, setFilterPrice] = useState<number>(10000);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const { data: services, loading, error } = useApiData(`${API_BASE_URL}/services`) as {
-        data: Service[];
-        loading: boolean;
-        error: string | null;
-    };
+    const [filterPrice, setFilterPrice] = useState<number>(10000);
+
+    const { data: services, loading, error } = useApiData<Service[]>(`${API_BASE_URL}/services`);
+    if (services === null) {
+        return <div>Error: got null instead of services</div>;
+    }
+
+    let maxPrice = services.reduce((max, current) => (current.price > max ? current.price : max), -Infinity)
+    if (maxPrice === -Infinity) {
+        maxPrice = 15000;
+    }
+
 
     // Handler 1: Фильтрация по слайдеру
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,8 +41,14 @@ function ServicesPage() {
 
     // Фильтрация данных
     const filteredServices = services.filter(
-        s => s.price <= filterPrice && s.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+        s => {
+            return s.price <= filterPrice &&
+                (
+                    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    s.serviceType.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+        }
+    ).sort((a, b) => a.price - b.price);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -72,7 +84,7 @@ function ServicesPage() {
                         <input
                             type="range"
                             min="1000"
-                            max="15000"
+                            max={maxPrice.toString()}
                             value={filterPrice}
                             onChange={handlePriceChange}
                             className="price-slider"

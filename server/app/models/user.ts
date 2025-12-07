@@ -8,6 +8,7 @@ export interface IUser extends Document {
     createdAt: NativeDate;
     updatedAt: NativeDate;
     google_id?: string;
+    timezone: string;
 }
 
 export interface IUserModel extends Model<IUser> {
@@ -20,7 +21,8 @@ const userSchema = new Schema<IUser, IUserModel>(
         email: { type: String, required: true, unique: true, index: true },
         password_hash: { type: String },
         is_admin: { type: Boolean, required: true, default: false },
-        google_id: { type: String, required: false, default: null, unique: true, sparse: true }
+        google_id: { type: String, required: false, sparse: true, unique: true },
+        timezone: { type: String, required: true, default: "UTC" }
     },
     { timestamps: true }
 );
@@ -34,10 +36,11 @@ userSchema.method("toJSON", function() {
         id: this._id,
         name: this.name,
         email: this.email,
-        is_admin: this.is_admin,
-        created_at: this.createdAt,
-        updated_at: this.updatedAt,
-        google_id: this.google_id
+        isAdmin: this.is_admin,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
+        googleId: this.google_id,
+        timezone: this.timezone
     }
 });
 

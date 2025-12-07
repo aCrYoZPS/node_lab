@@ -1,49 +1,49 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './index.css';
+import NavBar from './components/NavBar';
 import ServicesPage from './pages/ServicesPage';
 import ChatPage from './pages/ChatPage';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
-import ServiceDetails from './pages/ServiceDetailsPage.tsx'
-import { services } from './mockData';
-import './index.css';
-
-const NavBar = () => (
-    <nav style={{ background: '#333', padding: '1rem', color: 'white', display: 'flex', gap: '20px' }}>
-        <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Главная</Link>
-        <Link to="/services" style={{ color: 'white', textDecoration: 'none' }}>Услуги</Link>
-        <Link to="/vacancies" style={{ color: 'white', textDecoration: 'none' }}>Вакансии</Link>
-        <Link to="/chat" style={{ color: 'white', textDecoration: 'none' }}>Чат</Link>
-        <Link to="/login" style={{ color: 'white', textDecoration: 'none', marginLeft: 'auto' }}>Вход</Link>
-    </nav>
-);
-
-// Заглушка для вакансий
-const VacanciesPage = () => (
-    <div style={{ padding: '20px' }}>
-        <h2>Наши вакансии</h2>
-        <ul>
-            <li>Клинер - 50 000 руб.</li>
-            <li>Водитель - 60 000 руб.</li>
-        </ul>
-    </div>
-);
+import ServiceDetailsPage from './pages/ServiceDetailsPage.tsx'
+import LogoutHandler from './pages/LogoutPage.tsx';
+import RegisterPage from './pages/RegisterPage.tsx';
+import { AuthProvider } from './context/AuthContext.tsx';
+import ProtectedRoute from './components/ProtectedRoute.tsx';
+import BlogPage from './pages/BlogPage.tsx';
+import ArticlePage from './pages/ArticlePage.tsx';
+import VacanciesPage from './pages/VacanciesPage.tsx';
+import AdminPage from './pages/AdminPage.tsx';
+import ArticleManagementPage from './pages/ArticleManagementPage.tsx';
+import { CartProvider } from './context/CartContext.tsx';
+import CartPage from './pages/CartPage.tsx';
 
 function App() {
     return (
-        <Router>
-            <div className="app-container">
-                <NavBar />
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/services" element={<ServicesPage />} />
-                    <Route path="/services/:id" element={<ServiceDetails />} />
-                    <Route path="/chat" element={<ChatPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/vacancies" element={<VacanciesPage />} />
-                </Routes>
-            </div>
-        </Router>
+        <CartProvider>
+            <AuthProvider>
+                <Router>
+                    <div className="app-container">
+                        <NavBar />
+                        <Routes>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/services" element={<ServicesPage />} />
+                            <Route path="/services/:id" element={<ServiceDetailsPage />} />
+                            <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/vacancies" element={<VacanciesPage />} />
+                            <Route path="/logout" element={<LogoutHandler />} />
+                            <Route path="/register" element={<RegisterPage />} />
+                            <Route path="/blog" element={<BlogPage />} />
+                            <Route path="/blog/:id" element={<ArticlePage />} />
+                            <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+                            <Route path="/article_management" element={<ProtectedRoute><ArticleManagementPage /></ProtectedRoute>} />
+                            <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+                        </Routes>
+                    </div>
+                </Router>
+            </AuthProvider>
+        </CartProvider>
     );
 }
 

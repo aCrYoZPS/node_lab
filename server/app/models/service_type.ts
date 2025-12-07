@@ -19,8 +19,8 @@ serviceTypeSchema.method("toJSON", function() {
     return {
         id: this._id,
         name: this.name,
-        created_at: this.createdAt,
-        updated_at: this.updatedAt,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
     }
 });
 

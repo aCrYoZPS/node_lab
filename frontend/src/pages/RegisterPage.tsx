@@ -1,67 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { useAuth, type User } from '../context/AuthContext';
+import React, { useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import TimezoneSelector from '../components/TimezoneSelector'
 
-const LoginPage = () => {
+const defaultTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const RegisterPage = () => {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [timezone, setTimezone] = useState(defaultTimezone);
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
     const location = useLocation();
 
     const from = location.state?.from?.pathname || "/";
 
-    // 1. Listen for Google Redirect on component mount
-    useEffect(() => {
-        const token = searchParams.get('token');
-
-        if (token) {
-            const fetchUserData = async () => {
-                const controller = new AbortController();
-
-                try {
-                    const response = await fetch('http://localhost:8080/users/me', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                        signal: controller.signal,
-                    });
-
-                    if (!response.ok) {
-                        console.error('Authentication failed during /users/me fetch.');
-                        throw new Error('Authentication Failed');
-                    }
-
-                    const userData: Omit<User, 'token'> = await response.json();
-
-                    login({ ...userData, token: token });
-
-                    window.history.replaceState({}, document.title, window.location.pathname);
-
-                    console.log(`Navigating to ${from}`);
-
-                    navigate(from, { replace: true });
-
-                } catch (error) {
-                    if (error instanceof Error && error.name === 'AbortError') return;
-
-                    console.error('Error during Google Auth callback process:', error);
-                    navigate('/login');
-                }
-            };
-
-            fetchUserData();
-        }
-
-        return () => { };
-
-    }, [searchParams, login, navigate]);
-
-    // Требование: Валидация форм (клиентская)
     const validateForm = () => {
         if (!email.includes('@')) {
             setError('Некорректный Email');
@@ -89,15 +44,18 @@ const LoginPage = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/auth/login', {
+            console.log(`sent timezone: ${timezone}`);
+            const response = await fetch('http://localhost:8080/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
 
                 body: JSON.stringify({
+                    name: name,
                     email: email,
                     password: password,
+                    timezone: timezone,
                 }),
             });
 
@@ -134,6 +92,17 @@ const LoginPage = () => {
                 {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
 
                 <div style={{ marginBottom: '15px' }}>
+                    <label>Имя пользователя:</label><br />
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
                     <label>Email:</label><br />
                     <input
                         type="email"
@@ -155,10 +124,14 @@ const LoginPage = () => {
                     />
                 </div>
 
+                <div style={{ marginBottom: '15px' }}>
+                    <TimezoneSelector onTimezoneChange={setTimezone} />
+                </div>
+
                 <p style={{ marginTop: '-5px', marginBottom: '15px', fontSize: '0.9em' }}>
-                    Нет аккаунта в CleanPro?
-                    <Link to="/register" style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>
-                        <b>Зарегистрируйтесь.</b>
+                    Уже зарегистрированы в CleanPro?<br />
+                    <Link to="/login" style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>
+                        <b>Войдите в аккаунт.</b>
                     </Link>
                 </p>
 
@@ -167,7 +140,7 @@ const LoginPage = () => {
                     className="btn"
                     style={{ width: '100%', padding: '10px' }}
                 >
-                    Войти
+                    Зарегистрироваться
                 </button>
 
                 <hr style={{ margin: '15px 0' }} />
@@ -178,11 +151,11 @@ const LoginPage = () => {
                     className="btn"
                     style={{ background: '#db4437', width: '100%', padding: '10px' }}
                 >
-                    Войти через Google
+                    Зарегистрироваться через Google
                 </button>
             </form>
         </div>
     );
 };
 
-export default LoginPage;
+export default RegisterPage;

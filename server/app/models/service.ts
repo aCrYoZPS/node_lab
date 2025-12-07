@@ -6,6 +6,7 @@ export interface IService extends Document {
     price: number;
     service_type: Types.ObjectId;
     description: string;
+    image: string;
     createdAt: NativeDate;
     updatedAt: NativeDate;
 }
@@ -24,6 +25,7 @@ const serviceSchema = new Schema<IService, IServiceModel>(
             autopopulate: true,
             required: true,
         },
+        image: { type: String, required: false }
     },
     { timestamps: true }
 );
@@ -39,9 +41,10 @@ serviceSchema.method("toJSON", function() {
         name: this.name,
         price: this.price,
         description: this.description,
-        service_type: this.service_type,
-        created_at: this.createdAt,
-        updated_at: this.updatedAt,
+        serviceType: this.service_type,
+        image: this.image,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
     }
 });
 

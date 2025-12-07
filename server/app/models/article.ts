@@ -40,12 +40,13 @@ articleSchema.plugin(autopopulate as any, {
 
 articleSchema.method("toJSON", function() {
     return {
+        id: this._id,
         title: this.title,
         content: this.content,
         author: this.author,
         abstract: this.abstract,
-        created_at: this.createdAt,
-        updated_at: this.updatedAt,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
     }
 });
 

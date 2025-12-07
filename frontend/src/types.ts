@@ -17,7 +17,29 @@ export interface ServiceType {
 }
 
 export interface Vacancy {
-    id: number;
+    id: string;
     title: string;
-    salary: string;
+    comment: string;
+    salary: number;
+}
+
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    isAdmin: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    timezone: string;
+    token?: string;
+}
+
+export interface Article {
+    id: string;
+    title: string;
+    content: string;
+    author: User;
+    abstract: string;
+    createdAt: Date;
+    updatedAt: Date;
 }

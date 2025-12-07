@@ -13,20 +13,22 @@ export const authRouter = express.Router();
 const User = db.User;
 
 async function register(req: Request, res: Response) {
-    const { name, email, password } = req.body;
+    const { name, email, password, timezone } = req.body;
 
-    if (name === undefined || email === undefined || !validateEmail(email) || password === undefined) {
+    console.log(JSON.stringify(req.body));
+
+    if (name === undefined || email === undefined || !validateEmail(email) || password === undefined || timezone === undefined) {
         return res.status(400).json({ message: "Invalid user data" })
     }
 
     const password_hash = await bcrypt.hash(password, HASHING_SALT_ROUNDS);
 
-    let new_user = new User({ email, password_hash, name });
+    let new_user = new User({ email, password_hash, name, timezone });
     new_user = await new_user.save();
 
     const token = jwt.sign({ user_id: new_user._id }, process.env.JWT_SECRET!);
 
-    return res.json({ user: new_user, token: token });
+    return res.json({ user: new_user, token });
 }
 
 async function login(req: Request, res: Response) {
@@ -48,7 +50,7 @@ async function login(req: Request, res: Response) {
 
     const token = jwt.sign({ user_id: user._id }, process.env.JWT_SECRET!);
 
-    return res.json({ token: token });
+    return res.json({ user, token });
 }
 
 
@@ -64,6 +66,6 @@ authRouter.get("/google/callback",
     async (req: Request, res: Response) => {
         const user = req.user as any;
         const token = jwt.sign({ user_id: user._id }, process.env.JWT_SECRET!);
-        res.json({ token });
+        res.redirect(`http://localhost:8081/login?token=${token}`);
     }
 );

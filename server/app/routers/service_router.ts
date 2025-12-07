@@ -25,7 +25,8 @@ async function getServiceById(req: Request, res: Response) {
 }
 
 async function createService(req: Request, res: Response) {
-    const { name, price, service_type_id } = req.body;
+    const { name, price, description, serviceType: service_type_id, image } = req.body;
+    console.log(req.body);
 
     const user = await User.findById(req.claims?.user_id);
     if (user === null || !user.is_admin) {
@@ -37,14 +38,15 @@ async function createService(req: Request, res: Response) {
         return res.status(400).json({ message: `Invalid service type id ${service_type_id}` });
     }
 
-    let new_service = new Service({ name, price, service_type: service_type._id });
+    let new_service = new Service({ name, price, description, service_type: service_type._id, image });
     new_service = await new_service.save();
 
     return res.status(201).json(new_service);
 }
 
 async function updateService(req: Request, res: Response) {
-    const { name, price, service_type_id } = req.body;
+    const { name, price, serviceType: service_type_id, image } = req.body;
+    console.log(req.body);
 
     const user = await User.findById(req.claims?.user_id);
     if (user === null || !user.is_admin) {
@@ -62,6 +64,10 @@ async function updateService(req: Request, res: Response) {
 
     if (price !== undefined) {
         service.price = price;
+    }
+
+    if (image !== undefined) {
+        service.image = image;
     }
 
     if (service_type_id !== undefined) {

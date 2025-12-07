@@ -23,6 +23,11 @@ async function getArticleById(req: Request, res: Response) {
     return res.json(article);
 }
 
+async function getLatestArticle(req: Request, res: Response) {
+    const latestArticle = await Article.findOne().sort({ createdAt: -1 }).exec();
+    return res.json(latestArticle);
+}
+
 
 async function getArticlesByAuthor(req: Request, res: Response) {
     const user = await User.findById(req.params.author_id);
@@ -109,8 +114,9 @@ async function deleteArticle(req: Request, res: Response) {
 }
 
 articleRouter.get("/", getAllArticles);
+articleRouter.get("/latest", getLatestArticle)
 articleRouter.get('/:id', getArticleById);
-articleRouter.get('author/:author_id', getArticlesByAuthor);
+articleRouter.get('/author/:author_id', getArticlesByAuthor);
 articleRouter.post("/", authMiddleware, createArticle);
 articleRouter.put('/:id', authMiddleware, updateArticle);
 articleRouter.delete('/:id', authMiddleware, deleteArticle);
